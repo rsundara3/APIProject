@@ -18,6 +18,7 @@ public class BootStrapData implements CommandLineRunner{
 	public void run(String... args) throws Exception {
 
 	System.out.println("Loading Customer Data...");
+	System.out.println("Adding Customer Data...");
 	
 	Customer c1 = new Customer ();
 	c1.setFirstname("Jhon");
