@@ -1,11 +1,17 @@
-node {
-    stage('Build') {
-        echo 'Building....'
-    }
-    stage('Test') {
-        echo 'Testing....'
-    }
-    stage('Deploy') {
-        echo 'Deploying....'
-    }
+node () {
+
+	stage ('FreeStyleJob - Checkout') {
+ 	 checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '', url: 'https://github.com/rsundara3/APIProject.git']]]) 
+	}
+	stage ('FreeStyleJob - Build') {
+ 			// Maven build step
+	withMaven(maven: 'apache-maven-3.6.3') { 
+ 			if(isUnix()) {
+ 				sh "mvn -X compiler:compile CustomerRestService/pom.xml" 
+ 				
+			} else { 
+ 				bat "mvn -X compiler:compile CustomerRestService/pom.xml" 
+			} 
+ 		}		// Maven build step
+	}	
 }
