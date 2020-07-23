@@ -1,17 +1,38 @@
-node () {
+properties([parameters([ string(defaultValue: '', description: '	Branches to build', name: 'Branch_To_Build', trim: false),string(defaultValue: '', description: '	Checkout to a Sub Directory', name: 'Checkout_To_SubDirectory', trim: false)])])
 
-	stage ('FreeStyleJob - Checkout') {
- 	 checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '', url: 'https://github.com/rsundara3/APIProject.git']]]) 
-	}
-	stage ('FreeStyleJob - Build') {
- 			// Maven build step
-	withMaven(maven: 'apache-maven-3.6.3') { 
- 			if(isUnix()) {
- 				sh "mvn -X compiler:compile CustomerRestService/pom.xml" 
- 				
-			} else { 
- 				bat "mvn -X compiler:compile CustomerRestService/pom.xml" 
-			} 
- 		}		// Maven build step
-	}	
-}
+node()  {
+
+        echo 'Hello World!'
+        echo "Branches to build selected : ${params.Branch_To_Build}"
+        echo "Checkout to SubDirectory selected : ${params.Checkout_To_SubDirectory}"
+      
+      if ( params.Branch_To_Build == "Milestone1")
+    {
+        echo "Inside if"
+        SubDirToCheckout = 'super/'+params.Branch_To_Build
+        echo "Checkout to SubDirToCheckout is   "
+        echo SubDirToCheckout
+        
+    }
+      else
+    {
+        echo "Inside if"
+        
+        SubDirToCheckout = params.Branch_To_Build
+        
+        echo "Checkout to SubDirToCheckout  is  "
+        echo SubDirToCheckout
+        
+    }
+
+    stage('Checkout')
+    {
+        checkout([$class: 'GitSCM', branches: [[name: params.Branch_To_Build]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CleanBeforeCheckout'],  [$class: 'RelativeTargetDirectory', relativeTargetDir: SubDirToCheckout]], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/rsundara3/APIProject.git']]])
+
+        echo env.GIT_COMMIT
+        echo env.GIT_BRANCH 
+        echo env.GIT_REVISION        
+    }
+           
+  
+}	
